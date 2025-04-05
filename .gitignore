@@ -1,3 +1,6 @@
+# Removing this file since it shows EC2 Public IP
+ansible/inventory.ini
+
 # Terraform state and cache files in infrastructure/live/dev/ec2
 /infrastructure/live/dev/ec2/*.tfstate
 /infrastructure/live/dev/ec2/*.tfstate.*
