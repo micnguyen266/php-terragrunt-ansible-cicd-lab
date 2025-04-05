@@ -1,0 +1,121 @@
+---
+- name: Setup Hardened LAMP Stack on Amazon Linux 2
+  hosts: web
+  become: true
+
+  vars:
+    mysql_root_password: 'StrongMySQLRootPassword!'
+    php_packages:
+      - php
+      - php-mysqlnd
+      - php-fpm
+      - php-cli
+
+  tasks:
+#    - name: Update all packages
+#      yum:
+#        name: '*'
+#        state: latest
+#        use_backend: "dnf4"
+
+    - name: Enable amazon-linux-extras for PHP and clean metadata
+      shell: |
+        amazon-linux-extras enable php7.2
+        yum clean metadata
+
+    - name: Install Apache, MariaDB, and PHP packages
+      yum:
+        name:
+          - httpd
+          - mariadb-server
+          - "{{ php_packages }}"
+        state: present
+        use_backend: "dnf4"
+
+    - name: Start and enable Apache
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Start and enable MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: true
+
+    - name: Secure MariaDB installation manually
+      shell: |
+        mysql -u root <<EOF
+        DELETE FROM mysql.user WHERE User='';
+        UPDATE mysql.user SET Password=PASSWORD('{{ mysql_root_password }}') WHERE User='root';
+        DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+        DROP DATABASE IF EXISTS test;
+        FLUSH PRIVILEGES;
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Deploy PHP application (index.php)
+      copy:
+        dest: /var/www/html/index.php
+        content: |
+          <?php
+          echo "<h1>Hello, World from Amazon Linux 2 LAMP Stack!</h1>";
+          phpinfo();
+          ?>
+
+    - name: Configure firewalld to allow HTTP and HTTPS
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop:
+        - http
+        - https
+
+    - name: Harden SSH - disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        backup: yes
+
+    - name: Restart SSH service to apply changes
+      service:
+        name: sshd
+        state: restarted
+
+    - name: Install Fail2Ban
+      yum:
+        name: fail2ban
+        state: present
+#        use_backend: "dnf4"
+
+    - name: Configure Fail2Ban for SSH
+      copy:
+        dest: /etc/fail2ban/jail.d/sshd.local
+        content: |
+          [sshd]
+          enabled = true
+          port = ssh
+          filter = sshd
+          logpath = /var/log/secure
+          maxretry = 3
+          bantime = 3600
+
+    - name: Start and enable Fail2Ban
+      service:
+        name: fail2ban
+        state: started
+        enabled: true
+
+    - name: Ensure SELinux is enforcing (optional)
+      command: setenforce 1
+      ignore_errors: true
+
+    - name: Restart Apache to apply PHP configuration
+      service:
+        name: httpd
+        state: restarted
