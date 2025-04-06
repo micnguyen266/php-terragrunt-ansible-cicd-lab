@@ -8,4 +8,5 @@ inputs = {
   key_name               = "lab"          # Replace with your EC2 key pair name
   vpc_security_group_ids = ["sg-0271a2a5dfeba64a2"] # Replace with your security group ID(s)
   instance_name          = "lamp-dev-instance"
+  user_data_template     = "user_data.sh.tpl"  # This is optional if using the default
 }

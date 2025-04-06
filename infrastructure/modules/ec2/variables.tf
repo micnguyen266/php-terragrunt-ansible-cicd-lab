@@ -1,3 +1,9 @@
+variable "user_data_template" {
+  description = "Path to the user data template file"
+  type        = string
+  default     = "user_data.sh.tpl"
+}
+
 variable "ami" {
   description = "AMI to use for the instance"
   type        = string
