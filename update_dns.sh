@@ -8,9 +8,11 @@ RECORD_ID="${RECORD_ID:-}"
 RECORD_NAME="${RECORD_NAME:-demo.mrmikenguyen.com}"  # Default to demo.mrmikenguyen.com or change as needed
 TTL="${TTL:-300}"
 PROXIED="${PROXIED:-false}"
+PUBLIC_IP:"${PUBLIC_IP:env.PUBLIC_IP}"
 
 # Retrieve the current public IP of the EC2 instance.
-CURRENT_IP=$(curl -s http://checkip.amazonaws.com | tr -d '\n')
+CURRENT_IP="${PUBLIC_IP:-}"
+#CURRENT_IP=$(curl -s http://checkip.amazonaws.com | tr -d '\n')
 
 # Retrieve the current DNS record IP from Cloudflare.
 DNS_IP=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" \

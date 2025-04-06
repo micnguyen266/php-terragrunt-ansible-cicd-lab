@@ -21,6 +21,14 @@ jobs:
       - name: Set executable permission on DNS update script
         run: chmod +x update_dns.sh
 
+      - name: Get EC2 Public IP from Terragrunt Output
+        id: get_ip
+        run: |
+          cd infrastructure/live/dev/ec2
+          PUBLIC_IP=$(terragrunt output -raw instance_public_ip)
+          echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
+          echo "Public IP: $PUBLIC_IP"  
+
       - name: Run DNS update script
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
