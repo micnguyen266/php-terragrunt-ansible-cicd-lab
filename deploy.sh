@@ -34,8 +34,12 @@ $PUBLIC_IP ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/lab.pem ans
 EOF
 
   echo "Inventory file created with public IP: $PUBLIC_IP"
-  echo "Running Ansible playbook..."
 
+  # Sleep for 30 seconds before running Ansible playbook. Python 3.8 is being installed by user-data script.
+  echo "Waiting 30 seconds for the instance to be ready..."
+  sleep 30
+
+  echo "Running Ansible playbook..."
 #  ansible-playbook -i ../ansible/inventory.ini lamp.yml
   ansible-playbook -i ../ansible/inventory.ini webserver.yml
 

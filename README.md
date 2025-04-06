@@ -1,4 +1,4 @@
-# php-terragrunt-ansible-cicd-lab
+# terragrunt-ansible-cicd-lab
 
 1. When running the deploy.sh script. Terragrunt will run to deploy EC2 instance and then it will generate an inventory.ini file for Ansible to run.
    2. Run `deploy.sh deploy` to deploy EC2
