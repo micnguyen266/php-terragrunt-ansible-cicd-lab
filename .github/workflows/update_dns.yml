@@ -1,0 +1,32 @@
+name: Update Cloudflare DNS Record
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update-dns:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Set executable permission on DNS update script
+        run: chmod +x update_dns.sh
+
+      - name: Run DNS update script
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          ZONE_ID: ${{ secrets.ZONE_ID }}
+#          RECORD_ID: ${{ secrets.RECORD_ID }}
+          RECORD_NAME: ${{ secrets.RECORD_NAME }}
+          TTL: 300       # Optionally defined as a secret
+          PROXIED: false # Optionally defined as a secret
+        run: ./update_dns.sh
