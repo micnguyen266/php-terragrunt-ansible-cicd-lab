@@ -1,0 +1,67 @@
+---
+- hosts: web
+  become: true
+  tasks:
+
+#    - name: Update apt packages (Ubuntu)
+#      apt:
+#        update_cache: yes
+#      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Update yum packages (CentOS) using command
+      command: yum update -y
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Install Apache web server (CentOS) using command
+      command: yum install -y httpd
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Start and enable Apache service
+      service:
+        name: "{{ 'apache2' if ansible_facts['os_family'] == 'Debian' else 'httpd' }}"
+        state: started
+        enabled: yes
+
+#    - name: Install Git
+#      apt:
+#        name: git
+#        state: present
+#      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install Git (CentOS) using command
+      command: yum install -y git
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Add /var/www/html to Git safe.directory
+      command: git config --global --add safe.directory /var/www/html
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Clone the website's source code from GitHub
+      git:
+        repo: "https://github.com/micnguyen266/Canvas-Tic-Tac-Toe-Game.git"
+        dest: /var/www/html/
+        force: yes
+
+    - name: Rename finaltictactoe.html to index.html
+      command: mv /var/www/html/finaltictactoe.html /var/www/html/index.html
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Set file permissions for Apache
+      file:
+        path: /var/www/html/
+        owner: www-data
+        group: www-data
+        mode: '0755'
+        recurse: yes
+        state: directory
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Set file permissions for Apache (CentOS)
+      file:
+        path: /var/www/html/
+        owner: apache
+        group: apache
+        mode: '0755'
+        recurse: yes
+        state: directory
+      when: ansible_facts['os_family'] == "RedHat"

@@ -30,13 +30,14 @@ if [ "$ACTION" == "deploy" ]; then
   # Create inventory.ini for Ansible (make sure to add inventory.ini to .gitignore)
   cat <<EOF > inventory.ini
 [web]
-$PUBLIC_IP ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/lab.pem
+$PUBLIC_IP ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/lab.pem ansible_python_interpreter=/usr/bin/python3.8
 EOF
 
   echo "Inventory file created with public IP: $PUBLIC_IP"
   echo "Running Ansible playbook..."
 
-  ansible-playbook -i ../ansible/inventory.ini lamp.yml
+#  ansible-playbook -i ../ansible/inventory.ini lamp.yml
+  ansible-playbook -i ../ansible/inventory.ini webserver.yml
 
 elif [ "$ACTION" == "destroy" ]; then
   echo "Destroying EC2 instance with Terragrunt..."
