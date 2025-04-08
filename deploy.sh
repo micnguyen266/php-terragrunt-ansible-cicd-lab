@@ -35,9 +35,9 @@ EOF
 
   echo "Inventory file created with public IP: $PUBLIC_IP"
 
-  # Sleep for 30 seconds before running Ansible playbook. Python 3.8 is being installed by user-data script.
-  echo "Waiting 30 seconds for the instance to be ready..."
-  sleep 30
+  # Sleep for 45 seconds before running Ansible playbook. Python 3.8 is being installed by user-data script.
+  echo "Waiting 45 seconds for the instance to be ready..."
+  sleep 45
 
   echo "Running Ansible playbook..."
 #  ansible-playbook -i ../ansible/inventory.ini lamp.yml

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+	<head>
+		<title>Mike's Tic-Tac-Toe</title>
+		<link rel="stylesheet" type="text/css" href="css3.css">
+
+	</head>
+	<body>
+		<h1>2 Player Tic Tac Toe</h1>
+		<h4>By Michael Nguyen</h4>
+		<h3 id="playernames"></h3>
+		<div id="imabutton" class="notvisible button" onclick="cleargamestate()">
+			<center>
+				<h3>Play Again?</h3>
+			</center>
+			&nbsp;
+		</div>
+		<div id="box">
+				<canvas id="canvas-0" width="150" height="150" style="border:1px solid black" onclick="processMove(0)"></canvas>
+				<canvas id="canvas-1" width="150" height="150" style="border:1px solid black" onclick="processMove(1)"></canvas>
+				<canvas id="canvas-2" width="150" height="150" style="border:1px solid black" onclick="processMove(2)"></canvas></br>
+				<canvas id="canvas-3" width="150" height="150" style="border:1px solid black" onclick="processMove(3)"></canvas>
+				<canvas id="canvas-4" width="150" height="150" style="border:1px solid black" onclick="processMove(4)"></canvas>
+				<canvas id="canvas-5" width="150" height="150" style="border:1px solid black" onclick="processMove(5)"></canvas></br>
+				<canvas id="canvas-6" width="150" height="150" style="border:1px solid black" onclick="processMove(6)"></canvas>
+				<canvas id="canvas-7" width="150" height="150" style="border:1px solid black" onclick="processMove(7)"></canvas>
+				<canvas id="canvas-8" width="150" height="150" style="border:1px solid black" onclick="processMove(8)"></canvas>
+				
+		</div>
+	</body>	
+	<script type="text/javascript">
+		//Nine boxes of the game
+		var posstates = [0,0,0,0,0,0,0,0,0];
+		//3 images used in game
+		
+		var playernamesymbol = ["X","O"];
+		var playersymbol = ['','X','O'];
+		var turnNum;
+		var firstgame = true;
+
+		var x = "Player 1";
+		var o = "Player 2";
+		var playernames = [ x,o ];
+		var currentplayer = 0;
+		var canvas;
+		var ctx;
+
+		//checks wins for both either X or O
+		function checkwin() {
+			if (posstates[0]==posstates[1] && posstates[1]==posstates[2] && posstates[2]!=0||
+			    posstates[3]==posstates[4] && posstates[4]==posstates[5] && posstates[5]!=0||
+			    posstates[6]==posstates[7] && posstates[7]==posstates[8] && posstates[8]!=0||
+			    posstates[0]==posstates[3] && posstates[3]==posstates[6] && posstates[6]!=0||
+			    posstates[1]==posstates[4] && posstates[4]==posstates[7] && posstates[7]!=0||
+			    posstates[2]==posstates[5] && posstates[5]==posstates[8] && posstates[8]!=0||
+			    posstates[0]==posstates[4] && posstates[4]==posstates[8] && posstates[8]!=0||
+			    posstates[2]==posstates[4] && posstates[4]==posstates[6] && posstates[6]!=0){
+			   	dowin();
+
+			} else {
+				changeturn();
+				checktie();
+			}	
+		}
+
+		function dowin() {
+			document.getElementById("playernames").innerHTML = playernames[currentplayer] + "&nbsp" + "Wins!" + "&nbsp" + playernames[(currentplayer+1) % 2] + "&nbsp" + "starts next game.";
+			var iab = document.getElementById("imabutton")
+			iab.className = "visible button";
+		}
+
+		function dotie() {
+			document.getElementById("playernames").innerHTML = "DRAW!!" + "&nbsp" + playernames[(currentplayer+1) % 2] + "&nbsp" + "starts next game.";
+			var iab = document.getElementById("imabutton")
+			iab.className = "visible button";
+		}
+		
+		function drawCanvas(pos){
+			var element = document.getElementById("canvas-"+pos);
+			ctx = element.getContext('2d');
+	 		ctx.font = "120px serif";
+	 		ctx.clearRect(0, 0, 300, 300);
+	 		ctx.fillText(playersymbol[posstates[pos]], 32, 115);
+	 		
+		}
+		
+		function cleargamestate() {
+			
+			for (var i = 0; i < 9;) {
+				posstates[i] = 0;
+				ctx.clearRect(0, 0, 300, 300);
+				drawCanvas(i);
+				i++;
+			}
+		
+			var inb = document.getElementById("imabutton")
+			inb.className = "notvisible button";
+			changeturn();
+
+		
+		}
+		function checktie() {
+			if (posstates[0] != 0 && posstates[1] !=0 && posstates[2] != 0 && posstates[3] != 0 && posstates[4] != 0
+				&& posstates[5] != 0 && posstates[6] != 0 && posstates[7] != 0 && posstates[8] !=0) {dotie();
+			}
+		}
+
+		function processMove(pos) {
+	 		if (posstates[pos]>0) return;
+	 		
+	 		posstates[pos]=currentplayer+1;
+	 		drawCanvas(pos);
+	 		checkwin();
+    	}
+    			
+		function changeturn() {				
+			currentplayer++;    
+    		currentplayer = currentplayer % 2;
+    		document.getElementById("playernames").innerHTML = playernames[currentplayer] + "s Turn ("+playernamesymbol[currentplayer]+")";
+    	}
+		</script>
+</html>
