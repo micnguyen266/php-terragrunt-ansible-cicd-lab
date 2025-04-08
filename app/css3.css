@@ -1,0 +1,22 @@
+body{
+
+	text-align:center;
+	
+}
+h4{
+	color: blue;
+}
+
+.box {
+	height: auto;
+	width: auto;
+	align-items: center;
+}
+
+.notvisible {
+	visibility: hidden;
+}
+
+.visible {
+	visibility: visible;
+}
