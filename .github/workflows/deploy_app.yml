@@ -32,4 +32,4 @@ jobs:
           cat inventory.ini
 
       - name: Run Ansible Playbook to Deploy Code
-        run: ansible-playbook -i inventory.ini ansible/lamp.yml
+        run: ansible-playbook -i inventory.ini ansible/webserver.yml
