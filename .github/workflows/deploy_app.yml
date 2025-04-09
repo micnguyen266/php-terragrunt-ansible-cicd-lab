@@ -1,0 +1,29 @@
+name: Deploy App Updates
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > deploy_key.pem
+          chmod 600 deploy_key.pem
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Run Ansible Playbook to Deploy App
+        run: |
+          ansible-playbook -i <(echo -e "[web]\n${{ secrets.EC2_PUBLIC_IP }} ansible_user=${{ secrets.REMOTE_USER }} ansible_ssh_private_key_file=$(pwd)/deploy_key.pem ansible_ssh_extra_args='-o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'") ansible/lamp.yml
