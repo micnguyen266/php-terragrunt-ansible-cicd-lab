@@ -1,4 +1,4 @@
-name: Deploy App Updates via Ansible & Terragrunt
+name: Deploy ASG and Run Ansible
 
 on:
   push:
@@ -24,13 +24,22 @@ jobs:
           curl -L -o terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v0.48.1/terragrunt_linux_amd64
           chmod +x terragrunt
           sudo mv terragrunt /usr/local/bin/
+          terragrunt --version
+
+      - name: Install Terraform
+        run: |
+          curl -L -o terraform.zip https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_linux_amd64.zip
+          unzip terraform.zip
+          chmod +x terraform
+          sudo mv terraform /usr/local/bin/
+          terraform --version
 
       - name: Install Ansible and Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ansible jq
 
-      - name: Run Deployment Script
+      - name: Run Deploy Script
         run: |
           chmod +x deploy-asg.sh
           ./deploy-asg.sh deploy
