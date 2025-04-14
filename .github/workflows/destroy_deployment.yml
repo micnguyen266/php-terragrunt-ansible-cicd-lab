@@ -23,6 +23,14 @@ jobs:
           sudo mv terragrunt /usr/local/bin/
           terragrunt --version
 
+      - name: Install Terraform
+        run: |
+          curl -L -o terraform.zip https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_linux_amd64.zip
+          unzip terraform.zip
+          chmod +x terraform
+          sudo mv terraform /usr/local/bin/
+          terraform --version     
+
       - name: Destroy ASG and LB Resources
         run: |
           cd infrastructure/live/dev/asg
