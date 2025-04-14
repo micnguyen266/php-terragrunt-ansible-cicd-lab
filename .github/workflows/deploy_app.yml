@@ -1,4 +1,4 @@
-name: Deploy App Updates via Ansible
+name: Deploy App Updates via Ansible & Terragrunt
 
 on:
   push:
@@ -19,7 +19,18 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > deploy_key.pem
           chmod 600 deploy_key.pem
 
-      - name: Deploy ASG and Run Ansible Playbook
+      - name: Install Terragrunt
         run: |
-          chmod +x deploy.sh
+          curl -L -o terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v0.48.1/terragrunt_linux_amd64
+          chmod +x terragrunt
+          sudo mv terragrunt /usr/local/bin/
+
+      - name: Install Ansible and Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible jq
+
+      - name: Run Deployment Script
+        run: |
+          chmod +x deploy-asg.sh
           ./deploy-asg.sh deploy
